@@ -18,13 +18,14 @@ namespace GameDevTV.Inventories
 
         // STATE
         InventoryItem[] slots;
+        public int Size => slots.Length;
 
         // PUBLIC
 
         /// <summary>
         /// Broadcasts when the items in the slots are added/removed.
         /// </summary>
-        public event Action inventoryUpdated;
+        public event Action OnInventoryUpdated;
 
         /// <summary>
         /// Convenience for getting the player's inventory.
@@ -44,14 +45,6 @@ namespace GameDevTV.Inventories
         }
 
         /// <summary>
-        /// How many slots are in the inventory?
-        /// </summary>
-        public int GetSize()
-        {
-            return slots.Length;
-        }
-
-        /// <summary>
         /// Attempt to add the items to the first available slot.
         /// </summary>
         /// <param name="item">The item to add.</param>
@@ -66,10 +59,9 @@ namespace GameDevTV.Inventories
             }
 
             slots[i] = item;
-            if (inventoryUpdated != null)
-            {
-                inventoryUpdated();
-            }
+            
+            OnInventoryUpdated?.Invoke();
+            
             return true;
         }
 
@@ -102,10 +94,8 @@ namespace GameDevTV.Inventories
         public void RemoveFromSlot(int slot)
         {
             slots[slot] = null;
-            if (inventoryUpdated != null)
-            {
-                inventoryUpdated();
-            }
+            print("Removed item from slot " + slot);
+            OnInventoryUpdated?.Invoke();
         }
 
         /// <summary>
@@ -118,17 +108,28 @@ namespace GameDevTV.Inventories
         /// <returns>True if the item was added anywhere in the inventory.</returns>
         public bool AddItemToSlot(int slot, InventoryItem item)
         {
+            print("Attempting to add item to slot " + slot);
+
             if (slots[slot] != null)
             {
                 return AddToFirstEmptySlot(item); ;
             }
 
             slots[slot] = item;
-            if (inventoryUpdated != null)
-            {
-                inventoryUpdated();
-            }
+
+            OnInventoryUpdated?.Invoke();
+
             return true;
+        }
+
+        public int GetNumberInSlot(int slot)
+        {
+            /*if (slots[slot] != null)
+            {
+                return 1;
+            }*/
+
+            return 0;
         }
 
         // PRIVATE
@@ -185,10 +186,8 @@ namespace GameDevTV.Inventories
             {
                 slots[i] = InventoryItem.GetFromID(slotStrings[i]);
             }
-            if (inventoryUpdated != null)
-            {
-                inventoryUpdated();
-            }
+
+            OnInventoryUpdated?.Invoke();
         }
     }
 }

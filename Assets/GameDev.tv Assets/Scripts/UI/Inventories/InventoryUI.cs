@@ -17,32 +17,60 @@ namespace GameDevTV.UI.Inventories
         // CACHE
         Inventory playerInventory;
 
+        bool _hasBeenInitialized = false;
+
         // LIFECYCLE METHODS
 
-        private void Awake() 
+        private void Awake()
         {
             playerInventory = Inventory.GetPlayerInventory();
-            playerInventory.inventoryUpdated += Redraw;
+            
         }
 
         private void Start()
         {
+            playerInventory.OnInventoryUpdated += Redraw;
             Redraw();
         }
 
         // PRIVATE
-
-        private void Redraw()
+        // OLD VERSION
+        /*private void Redraw()
         {
             foreach (Transform child in transform)
             {
                 Destroy(child.gameObject);
             }
 
-            for (int i = 0; i < playerInventory.GetSize(); i++)
+            for (int i = 0; i < playerInventory.Size; i++)
             {
                 var itemUI = Instantiate(InventoryItemPrefab, transform);
                 itemUI.Setup(playerInventory, i);
+            }
+        }*/
+
+        private void Redraw()
+        {
+            if (!_hasBeenInitialized)
+            {
+                foreach (Transform child in transform)
+                {
+                    Destroy(child.gameObject);
+                }
+
+                for (int i = 0; i < playerInventory.Size; i++)
+                {
+                    var itemUI = Instantiate(InventoryItemPrefab, transform);
+                    itemUI.Setup(playerInventory, i);
+                }
+                _hasBeenInitialized = true;
+            }
+            else
+            {
+                foreach (InventorySlotUI itemUI in transform.GetComponentsInChildren<InventorySlotUI>())
+                {
+                    itemUI.Refresh();
+                }
             }
         }
     }

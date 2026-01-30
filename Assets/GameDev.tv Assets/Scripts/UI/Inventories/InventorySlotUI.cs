@@ -9,25 +9,24 @@ namespace GameDevTV.UI.Inventories
     public class InventorySlotUI : MonoBehaviour, IDragContainer<InventoryItem>
     {
         // CONFIG DATA
-        [SerializeField] InventoryItemIcon icon = null;
+        [SerializeField] InventoryItemIcon _icon = null;
 
         // STATE
-        int index;
-        InventoryItem item;
-        Inventory inventory;
+        int _index;
+        Inventory _inventory;
 
         // PUBLIC
 
         public void Setup(Inventory inventory, int index)
         {
-            this.inventory = inventory;
-            this.index = index;
-            icon.SetItem(inventory.GetItemInSlot(index));
+            _inventory = inventory;
+            _index = index;
+            _icon.SetItem(inventory.GetItemInSlot(index));
         }
 
         public int MaxAcceptable(InventoryItem item)
         {
-            if (inventory.HasSpaceFor(item))
+            if (_inventory.HasSpaceFor(item))
             {
                 return int.MaxValue;
             }
@@ -36,12 +35,18 @@ namespace GameDevTV.UI.Inventories
 
         public void AddItems(InventoryItem item, int number)
         {
-            inventory.AddItemToSlot(index, item);
+            _inventory.AddItemToSlot(_index, item);
         }
 
         public InventoryItem GetItem()
         {
-            return inventory.GetItemInSlot(index);
+            return _inventory.GetItemInSlot(_index);
+        }
+
+        public void Refresh()
+        {
+            //icon.SetItem(inventory.GetItemInSlot(_index), inventory.GetNumberInSlot(_index)); future proofing for stackable items
+            _icon.SetItem(_inventory.GetItemInSlot(_index));
         }
 
         public int GetNumber()
@@ -51,7 +56,7 @@ namespace GameDevTV.UI.Inventories
 
         public void RemoveItems(int number)
         {
-            inventory.RemoveFromSlot(index);
+            _inventory.RemoveFromSlot(_index);
         }
     }
 }
